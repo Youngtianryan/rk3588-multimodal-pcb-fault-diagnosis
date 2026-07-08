@@ -139,15 +139,6 @@ status_dashboard.cmd your-board-ip
 stop_dashboard.cmd your-board-ip
 ```
 
-## 竞赛展示建议 | Competition Presentation Notes
-
-- 建议演示顺序：**相机接入 -> 四孔标定 -> 热像融合 -> 热点识别 -> PDF 报告导出**
-- 评审展示重点：
-  - RK3588 板端实时运行
-  - 多模态融合与器件级定位
-  - 本地 / 云端双推理链路
-  - 可视化诊断报告闭环
-
 ## 开源说明 | Open-Source Notes
 
 - 本仓库已移除真实 API Key、板端运行缓存、临时抓帧、历史诊断报告和本地虚拟环境
