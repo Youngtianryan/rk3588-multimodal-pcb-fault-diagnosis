@@ -35,9 +35,80 @@ The system runs acquisition, calibration, thermal fusion, component localization
 
 ## 系统架构 | System Architecture
 
-<p align="center">
-  <img src="./rk3588_architecture_diagram.png" alt="RK3588 Multimodal PCB Diagnosis Architecture" width="900" />
-</p>
+GitHub 原生渲染的 Mermaid 架构图在首页缩放时更清晰，也更适合持续维护。  
+This Mermaid diagram renders natively on GitHub and stays sharper than a bitmap image.
+
+```mermaid
+%%{init: {
+  "theme": "neutral",
+  "flowchart": { "curve": "linear", "nodeSpacing": 28, "rankSpacing": 38 },
+  "themeVariables": {
+    "fontFamily": "Arial, Microsoft YaHei, sans-serif",
+    "primaryColor": "#eaf2fd",
+    "primaryBorderColor": "#2f6db4",
+    "primaryTextColor": "#163a70",
+    "lineColor": "#4b5563",
+    "secondaryColor": "#fff4e8",
+    "tertiaryColor": "#eef7ff"
+  }
+}}%%
+flowchart LR
+    subgraph IN["Input Layer"]
+        direction TB
+        VC["Visible Camera<br/>UVC video / silkscreen / texture"]
+        TC["Thermal Camera<br/>Pseudo-color thermal / crosshair / hotspot"]
+        BD["Board Data<br/>Coordinates / netlist / component metadata"]
+    end
+
+    subgraph EDGE["RK3588 Edge Runtime"]
+        direction TB
+        AR["Acquisition & Registration<br/>dual-stream capture<br/>four-hole calibration<br/>contour-based refinement"]
+        FM["Fusion & Mapping<br/>thermal overlay<br/>board ROI alignment<br/>component coordinate mapping"]
+        HI["Hotspot Interpretation<br/>crosshair anchor<br/>color peak parsing<br/>OCR temperature extraction"]
+        LI["Local Inference Path<br/>YOLOv8 OBB / RKNN / RKLLM"]
+        CI["Cloud Inference Path<br/>DeepSeek API diagnostic reasoning"]
+    end
+
+    subgraph OUT["Presentation Layer"]
+        direction TB
+        WD["Web Dashboard<br/>preview / calibration / model switching"]
+        RP["Diagnostic Outputs<br/>component localization<br/>Chinese PDF report"]
+    end
+
+    DEP["Engineering Deployment<br/>SSH / Paramiko / systemd --user / desktop launcher"]
+
+    VC --> AR
+    TC --> AR
+    BD --> FM
+    AR --> FM
+    FM --> HI
+    HI --> LI
+    HI --> CI
+    FM --> WD
+    LI --> RP
+    CI --> RP
+    WD --> RP
+    RP --> DEP
+
+    classDef input fill:#eef6ff,stroke:#2f6db4,color:#163a70,stroke-width:1.5px;
+    classDef thermal fill:#fff5e8,stroke:#d97706,color:#9a5800,stroke-width:1.5px;
+    classDef board fill:#ecfbf5,stroke:#0f766e,color:#0f5b56,stroke-width:1.5px;
+    classDef core fill:#f7f9fc,stroke:#3b82f6,color:#1f2937,stroke-width:1.5px;
+    classDef infer fill:#f5effd,stroke:#6d4aa2,color:#4c3274,stroke-width:1.5px;
+    classDef output fill:#edf8f6,stroke:#0f766e,color:#0f5b56,stroke-width:1.5px;
+    classDef deploy fill:#f8fafc,stroke:#94a3b8,color:#334155,stroke-width:1.5px;
+
+    class VC input;
+    class TC thermal;
+    class BD board;
+    class AR,FM,HI core;
+    class LI,CI infer;
+    class WD,RP output;
+    class DEP deploy;
+```
+
+如需论文/答辩版高分辨率矢量图，建议下一步把同一份结构转成 `Graphviz` 或 `D2` 导出 SVG / PDF。  
+For a paper-ready vector figure, the next step is exporting the same structure through Graphviz or D2 as SVG/PDF.
 
 ## 典型工作流 | Demo Workflow
 
