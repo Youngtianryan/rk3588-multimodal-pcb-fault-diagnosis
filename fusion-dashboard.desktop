@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=启动融合界面
+Comment=启动服务并打开浏览器
+Exec=/usr/bin/bash -lc /home/elf/Desktop/board_desktop_launcher.sh
+Icon=utilities-terminal
+Terminal=true
+Categories=Utility;

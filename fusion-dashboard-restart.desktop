@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=重启融合界面
+Comment=重启服务并重新打开浏览器
+Exec=/usr/bin/bash -lc /home/elf/Desktop/board_desktop_restart.sh
+Icon=view-refresh
+Terminal=true
+Categories=Utility;

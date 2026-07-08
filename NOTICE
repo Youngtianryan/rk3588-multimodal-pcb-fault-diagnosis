@@ -1,0 +1,9 @@
+This repository includes third-party software:
+
+1. vendor/xlsx.full.min.js
+   Upstream project: SheetJS Community Edition
+   Upstream repository: https://github.com/SheetJS/sheetjs
+   License: Apache License 2.0
+
+This open-source release intentionally does not bundle proprietary Microsoft YaHei font files.
+If you need custom Chinese font rendering for PDFs, place your own licensed font files in a local-only path and keep them out of version control.

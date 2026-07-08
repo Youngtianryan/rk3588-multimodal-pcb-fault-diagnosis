@@ -1,0 +1,11 @@
+ref,x,y,rotation,type
+R1,34,48,0,resistor
+U3,63,58,90,mcu
+L2,72,32,0,inductor
+C5,27,24,0,capacitor
+Q1,51,41,180,mosfet
+J2,88,78,0,connector
+TP1,17,66,0,testpoint
+R8,42,70,0,resistor
+U6,79,54,0,driver
+C9,60,24,0,capacitor

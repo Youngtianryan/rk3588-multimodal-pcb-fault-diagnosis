@@ -1,0 +1,10 @@
+{
+  "provider": "deepseek",
+  "baseUrl": "https://api.deepseek.com",
+  "model": "deepseek-v4-flash",
+  "deepseekApiKey": "",
+  "localServerUrl": "",
+  "localServerModel": "rkllm",
+  "localMaxNewTokens": 96,
+  "localMaxContextLen": 96
+}

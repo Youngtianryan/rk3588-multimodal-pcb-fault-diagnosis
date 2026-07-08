@@ -1,0 +1,18 @@
+[Unit]
+Description=Fusion Dashboard Service
+After=default.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/elf/fusion-dashboard
+Environment=PYTHONUNBUFFERED=1
+ExecStartPre=/usr/bin/bash -lc 'fuser -k -n tcp 8765 2>/dev/null || true; pkill -9 -f "[b]oard_stream_server.py" 2>/dev/null || true; sleep 1'
+ExecStart=/home/elf/fusion-dashboard/run_fusion_dashboard_service.sh
+Restart=on-failure
+RestartSec=2
+TimeoutStopSec=8
+KillSignal=SIGTERM
+KillMode=mixed
+
+[Install]
+WantedBy=default.target

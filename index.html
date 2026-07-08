@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>双光融合电路板故障检测平台</title>
+    <link rel="stylesheet" href="./styles.css?v=20260707c" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="viewer-panel" aria-label="视频监看区">
+        <header class="topbar">
+          <div class="topbar-copy">
+            <p class="eyebrow">全国大学生嵌入式芯片与系统设计竞赛 · 应用赛道</p>
+            <h1>PCB 双光融合故障检测平台</h1>
+            <p class="subhead">RK3588 / 可见光 UVC / 4117 热成像 / 板级定位 / 本地与 API 诊断报告</p>
+          </div>
+          <div class="status-strip">
+            <span class="status-pill" id="cameraStatus">可见光待连接</span>
+            <span class="status-pill" id="thermalStatus">热成像待连接</span>
+            <span class="status-pill" id="modelStatus">融合未启动</span>
+          </div>
+        </header>
+
+        <div class="camera-stage">
+          <div class="feed primary-feed">
+            <div class="feed-head">
+              <span>可见光 UVC</span>
+              <strong id="visibleResolution">--</strong>
+            </div>
+            <img id="cameraFeed" alt="可见光视频流" />
+            <div id="boardCalOverlay" class="board-cal-overlay hidden"></div>
+            <div class="feed-placeholder" id="cameraPlaceholder">
+              <span>点击右侧“连接可见光”打开画面</span>
+            </div>
+          </div>
+
+          <div class="feed thermal-feed">
+            <div class="feed-head">
+              <span>4117 热成像</span>
+              <strong id="thermalReadout">--</strong>
+            </div>
+            <img id="thermalFeed" alt="热成像视频流" />
+            <div id="thermalCalOverlay" class="board-cal-overlay hidden"></div>
+            <div class="feed-placeholder" id="thermalPlaceholder">
+              <span>点击右侧“连接热成像”打开画面</span>
+            </div>
+          </div>
+
+          <div class="feed fusion-feed">
+            <div class="feed-head">
+              <span>融合预览</span>
+              <strong id="defectCount">双路叠加预览</strong>
+            </div>
+            <img id="fusionFeed" alt="融合视频流" />
+          </div>
+        </div>
+      </section>
+
+      <aside class="control-panel" aria-label="控制区">
+        <div class="control-scroll">
+          <section class="panel-section">
+            <div class="section-title">
+              <h2>采集控制</h2>
+              <span id="runState">空闲</span>
+            </div>
+            <div class="button-grid">
+              <button id="startCamera">连接可见光</button>
+              <button id="stopCamera" class="secondary">断开可见光</button>
+              <button id="startThermal">连接热成像</button>
+              <button id="stopThermal" class="secondary">断开热成像</button>
+              <button id="toggleFusion" class="secondary">融合开关</button>
+              <button id="recalibrateFusion" class="secondary">OpenCV 修位</button>
+              <button id="runYoloObb" class="secondary">YOLOv8 OBB</button>
+              <button id="captureFrame" class="secondary">保存截图</button>
+            </div>
+          </section>
+
+          <section class="panel-section">
+            <div class="section-title">
+              <h2>显示参数</h2>
+              <span>Live</span>
+            </div>
+            <label class="control-row">
+              <span>热区阈值</span>
+              <input id="tempThreshold" type="range" min="40" max="95" value="68" />
+              <b id="thresholdValue">68 C</b>
+            </label>
+            <label class="control-row">
+              <span>融合透明度</span>
+              <input id="fusionAlpha" type="range" min="10" max="90" value="45" />
+              <b id="alphaValue">45%</b>
+            </label>
+            <label class="select-row">
+              <span>检测模式</span>
+              <select id="detectMode">
+                <option>可见光 + 热成像叠加</option>
+                <option>电阻电容热斑观察</option>
+                <option>芯片发热点观察</option>
+                <option>整板巡检</option>
+              </select>
+            </label>
+          </section>
+
+          <section class="panel-section">
+            <div class="section-title">
+              <h2>融合微调</h2>
+              <span id="manualAdjustStatus">dx 0 / dy 0 / sx 1.00 / sy 1.00</span>
+            </div>
+            <div class="adjust-grid">
+              <button class="secondary" data-adjust="dy" data-step="-10">上移</button>
+              <button class="secondary" data-adjust="dy" data-step="10">下移</button>
+              <button class="secondary" data-adjust="dx" data-step="-10">左移</button>
+              <button class="secondary" data-adjust="dx" data-step="10">右移</button>
+              <button class="secondary" data-adjust="scaleX" data-step="-0.03">横向缩小</button>
+              <button class="secondary" data-adjust="scaleX" data-step="0.03">横向放大</button>
+              <button class="secondary" data-adjust="scaleY" data-step="-0.03">纵向缩小</button>
+              <button class="secondary" data-adjust="scaleY" data-step="0.03">纵向放大</button>
+              <button class="secondary" data-adjust="sourceLeft" data-step="8">热源左扩</button>
+              <button class="secondary" data-adjust="sourceLeft" data-step="-8">热源左收</button>
+              <button class="secondary" data-adjust="sourceRight" data-step="8">热源右扩</button>
+              <button class="secondary" data-adjust="sourceRight" data-step="-8">热源右收</button>
+              <button class="secondary" data-adjust="sourceTop" data-step="6">热源上扩</button>
+              <button class="secondary" data-adjust="sourceBottom" data-step="6">热源下扩</button>
+              <button id="resetManualAdjust" class="secondary">重置微调</button>
+              <button id="saveManualAdjust">保存参数</button>
+            </div>
+          </section>
+
+          <section class="panel-section">
+            <div class="section-title">
+              <h2>板级定位</h2>
+              <span id="netlistStatus">未导入</span>
+            </div>
+            <div class="button-grid">
+              <button id="uploadNetlist">上传坐标文件</button>
+              <button id="clearNetlist" class="secondary">清除文件</button>
+              <button id="startBoardCal" class="secondary">标定可见光</button>
+              <button id="confirmVisibleBoardCal">确认可见光</button>
+              <button id="startThermalBoardCal" class="secondary">标定热成像</button>
+              <button id="confirmThermalBoardCal">确认热成像</button>
+              <button id="undoBoardCal" class="secondary">撤销点位</button>
+              <button id="runFusionCal">点击融合</button>
+              <button id="clearBoardCal" class="secondary">清除标定</button>
+            </div>
+            <input id="netlistInput" type="file" accept=".csv,.txt,.json,.xlsx,.xls" hidden />
+            <div class="mapping-box">
+              <div class="mapping-row">
+                <span>当前文件</span>
+                <strong id="netlistFileName">未选择</strong>
+              </div>
+              <div class="mapping-row">
+                <span>坐标状态</span>
+                <strong id="boardOutlineStatus">未解析</strong>
+              </div>
+              <div class="mapping-row">
+                <span>器件数量</span>
+                <strong id="componentCount">0</strong>
+              </div>
+              <div class="mapping-row">
+                <span>四孔标定</span>
+                <strong id="boardCalStatus">等待开始标定</strong>
+              </div>
+              <p class="mapping-tip">
+                推荐流程：先上传坐标文件，再标定可见光四孔，确认后标定热成像四孔，最后点击融合。
+              </p>
+            </div>
+          </section>
+
+          <section class="panel-section report-section">
+            <div class="section-title">
+              <h2>诊断报告</h2>
+              <div class="report-actions">
+                <label class="report-mode" for="reportLlmMode">
+                  <span>模型</span>
+                  <select id="reportLlmMode">
+                    <option value="auto">自动</option>
+                    <option value="api">API</option>
+                    <option value="local">本地</option>
+                  </select>
+                </label>
+                <button id="generateReport" class="small-button">生成诊断 PDF</button>
+              </div>
+            </div>
+            <div class="report-box" id="reportBox">
+              <p>等待双路视频流接入。</p>
+            </div>
+          </section>
+
+          <section class="panel-section log-section">
+            <div class="section-title">
+              <h2>运行日志</h2>
+              <button id="clearLog" class="small-button secondary">清空</button>
+            </div>
+            <ol class="log-list" id="logList"></ol>
+          </section>
+        </div>
+      </aside>
+    </main>
+
+    <script src="./vendor/xlsx.full.min.js"></script>
+    <script src="./app.js?v=20260707c"></script>
+  </body>
+</html>

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=关闭融合界面
+Comment=关闭服务并退出浏览器
+Exec=/usr/bin/bash -lc /home/elf/Desktop/board_desktop_stop.sh
+Icon=process-stop
+Terminal=true
+Categories=Utility;

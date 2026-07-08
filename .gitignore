@@ -1,0 +1,27 @@
+__pycache__/
+*.py[cod]
+*.log
+.DS_Store
+
+# Local runtime state
+reports/
+runtime_board_model.json
+manual_board_pose.json
+manual_thermal_pose.json
+fusion_profile.json
+yolo_obb_result.json
+yolo_obb_input.jpg
+latest-thermal-raw.jpg
+fusion_snapshot_for_report.jpg
+ocr-rot-test.jpg
+
+# Local config and environments
+llm_config.json
+.venv/
+.venv*/
+venv/
+env/
+
+# Temporary captures
+tmp/
+tmp_board_capture/
